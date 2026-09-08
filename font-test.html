@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Font test tiếng Việt · Hermes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Playfair+Display:wght@600;700;800&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Serif:ital@0;1&family=Archivo:wght@700;800&family=Be+Vietnam+Pro:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#FBF4E3;color:#1E1B16;font-family:"Be Vietnam Pro",sans-serif;padding:40px 56px;}
+  h1.page{font-family:"Be Vietnam Pro";font-size:20px;margin:0 0 6px;}
+  .sub{color:#7A7060;margin:0 0 30px;font-size:14px;}
+  .row{border-top:2px solid #1E1B16;padding:22px 0 26px;}
+  .label{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:12px;}
+  .label b{font-family:"Be Vietnam Pro";font-weight:700;font-size:15px;}
+  .label .meta{font-size:12px;color:#7A7060;}
+  .hl{color:#E4572E;}
+  .big{font-weight:700;line-height:1.08;letter-spacing:-.015em;margin:0;font-size:clamp(2rem,1rem+3.6vw,3.4rem);}
+  .stress{font-size:20px;margin-top:8px;color:#4C4536;}
+  .f-fraunces .big,.f-fraunces .stress{font-family:"Fraunces",serif;}
+  .f-playfair .big,.f-playfair .stress{font-family:"Playfair Display",serif;}
+  .f-bricolage .big,.f-bricolage .stress{font-family:"Bricolage Grotesque",sans-serif;}
+  .f-instrument .big,.f-instrument .stress{font-family:"Instrument Serif",serif;font-weight:400;}
+  .f-archivo .big,.f-archivo .stress{font-family:"Archivo",sans-serif;font-weight:800;}
+  .f-bvp .big,.f-bvp .stress{font-family:"Be Vietnam Pro",sans-serif;font-weight:800;}
+</style>
+</head>
+<body>
+  <h1 class="page">So sánh font heading — kiểm tra Việt hóa</h1>
+  <p class="sub">Câu mẫu nhiều dấu. Chú ý các chữ: <b>ợ ữ ể ầ ĩ ộ ằ ừ –</b>. Nếu font thiếu Việt hóa, các chữ này sẽ nhảy sang font khác / lệch baseline.</p>
+
+  <div class="row f-fraunces">
+    <div class="label"><b>1. Fraunces</b> <span class="meta">serif ấm (đang dùng) · optical size · Việt hóa ✔</span></div>
+    <p class="big"><span class="hl">Hermes</span> Agent — trợ lý AI <span class="hl">học–hiểu</span> phát triển cùng bạn</p>
+    <p class="stress">Trợ lý · cài đặt · Bước 1 · giữ nhịp · cẩm nang · ưu tiên · lữ đữ ẫ ộ ằ</p>
+  </div>
+
+  <div class="row f-playfair">
+    <div class="label"><b>2. Playfair Display</b> <span class="meta">serif thanh/tương phản cao · Việt hóa ✔</span></div>
+    <p class="big"><span class="hl">Hermes</span> Agent — trợ lý AI <span class="hl">học–hiểu</span> phát triển cùng bạn</p>
+    <p class="stress">Trợ lý · cài đặt · Bước 1 · giữ nhịp · cẩm nang · ưu tiên · lữ đữ ẫ ộ ằ</p>
+  </div>
+
+  <div class="row f-bricolage">
+    <div class="label"><b>3. Bricolage Grotesque</b> <span class="meta">grotesque cá tính (trendy) · KIỂM TRA dấu</span></div>
+    <p class="big"><span class="hl">Hermes</span> Agent — trợ lý AI <span class="hl">học–hiểu</span> phát triển cùng bạn</p>
+    <p class="stress">Trợ lý · cài đặt · Bước 1 · giữ nhịp · cẩm nang · ưu tiên · lữ đữ ẫ ộ ằ</p>
+  </div>
+
+  <div class="row f-instrument">
+    <div class="label"><b>4. Instrument Serif</b> <span class="meta">serif elegant 1 nét (rất "startup") · KIỂM TRA dấu</span></div>
+    <p class="big"><span class="hl">Hermes</span> Agent — trợ lý AI <span class="hl">học–hiểu</span> phát triển cùng bạn</p>
+    <p class="stress">Trợ lý · cài đặt · Bước 1 · giữ nhịp · cẩm nang · ưu tiên · lữ đữ ẫ ộ ằ</p>
+  </div>
+
+  <div class="row f-archivo">
+    <div class="label"><b>5. Archivo (800)</b> <span class="meta">grotesque đậm/brutalist (sans) · Việt hóa ✔</span></div>
+    <p class="big"><span class="hl">Hermes</span> Agent — trợ lý AI <span class="hl">học–hiểu</span> phát triển cùng bạn</p>
+    <p class="stress">Trợ lý · cài đặt · Bước 1 · giữ nhịp · cẩm nang · ưu tiên · lữ đữ ẫ ộ ằ</p>
+  </div>
+
+  <div class="row f-bvp">
+    <div class="label"><b>6. Be Vietnam Pro (800)</b> <span class="meta">sans thuần Việt (chuẩn dấu tuyệt đối) · Việt hóa ✔✔</span></div>
+    <p class="big"><span class="hl">Hermes</span> Agent — trợ lý AI <span class="hl">học–hiểu</span> phát triển cùng bạn</p>
+    <p class="stress">Trợ lý · cài đặt · Bước 1 · giữ nhịp · cẩm nang · ưu tiên · lữ đữ ẫ ộ ằ</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concept slides · Hermes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#FBF4E3;--paper:#FFFDF8;--ink:#1E1B16;--sub:#4C4536;--muted:#7A7060;
+    --accent:#E4572E;--green:#234D2B;--purple:#8A7FD4;--coral:#F0A28E;}
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:#D9D2C2;font-family:"Be Vietnam Pro",system-ui,sans-serif;color:var(--ink);
+    -webkit-font-smoothing:antialiased;overflow:hidden;}
+  .nav{position:fixed;top:50%;transform:translateY(-50%);z-index:30;width:46px;height:46px;border-radius:50%;
+    border:2px solid var(--ink);background:#fff;font-size:20px;cursor:pointer;display:grid;place-items:center;box-shadow:3px 3px 0 var(--ink);}
+  .nav.prev{left:18px;}.nav.next{right:18px;}
+  .counter{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:30;font-size:12px;font-weight:700;
+    background:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 14px;box-shadow:2px 2px 0 var(--ink);}
+  .slide{position:fixed;inset:0;display:grid;place-items:center;padding:38px 78px;opacity:0;visibility:hidden;z-index:1;}
+  .slide.active{opacity:1;visibility:visible;z-index:2;}
+  .stage{position:relative;width:min(1500px,92vw);background:var(--cream);border:2.5px solid var(--ink);border-radius:8px;
+    box-shadow:10px 12px 0 rgba(30,27,22,.16);display:grid;align-content:center;padding:clamp(28px,3.4vw,54px);overflow:hidden;}
+  @media(min-width:841px){.stage{width:min(1500px,90vw,calc(84vh*16/9));aspect-ratio:16/9;}}
+  .tag{position:absolute;top:12px;right:14px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);background:#fff;border:1.5px solid var(--ink);border-radius:5px;padding:3px 8px;}
+  h2{font-family:"Fraunces",Georgia,serif;font-weight:600;margin:0;line-height:1.1;letter-spacing:-.015em;}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .hl{color:var(--accent);}
+  .src{position:absolute;left:16px;bottom:12px;z-index:5;display:inline-flex;align-items:center;gap:7px;
+    font-size:11px;font-weight:700;color:var(--ink);text-decoration:none;background:#fff;border:1.5px solid var(--ink);
+    border-radius:999px;padding:5px 12px;box-shadow:2px 2px 0 var(--ink);font-family:"JetBrains Mono",monospace;}
+  .src:hover{background:#FFF3D6;}
+
+  /* ---- Slide B: memory 4 tầng ---- */
+  .memhead{font-size:clamp(1.6rem,1rem+2.2vw,2.7rem);margin-bottom:6px;}
+  .tiers{display:flex;flex-direction:column;gap:12px;margin-top:20px;max-width:1000px;}
+  .tier{display:flex;gap:16px;align-items:center;border:2.5px solid var(--ink);border-radius:12px;background:var(--paper);
+    padding:14px 20px;box-shadow:4px 5px 0 rgba(30,27,22,.13);opacity:0;transform:translateY(14px);}
+  .slide.active .tier{animation:rise .5s cubic-bezier(.16,1,.3,1) forwards;}
+  .slide.active .tier:nth-child(1){animation-delay:.05s;}
+  .slide.active .tier:nth-child(2){animation-delay:.22s;}
+  .slide.active .tier:nth-child(3){animation-delay:.39s;}
+  .slide.active .tier:nth-child(4){animation-delay:.60s;}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  .tier .badge{flex:0 0 auto;width:42px;height:42px;border-radius:10px;background:var(--ink);color:var(--cream);
+    font-family:"Fraunces",serif;font-weight:700;font-size:1.3rem;display:grid;place-items:center;}
+  .tier .tt{font-weight:700;font-size:1.08rem;}
+  .tier .td{color:var(--muted);font-size:.9rem;margin-top:1px;}
+  .tier.plug{border-style:dashed;background:rgba(138,127,212,.12);}
+  .tier.plug .badge{background:var(--purple);}
+  .tier.plug .pulse{margin-left:auto;font-size:.78rem;font-weight:800;color:var(--purple);border:1.5px dashed var(--purple);
+    border-radius:999px;padding:4px 11px;animation:blink 1.6s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:.45;}50%{opacity:1;}}
+  .builtin-cap{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:2px 4px;}
+
+  /* ---- Slide D: learning loop ---- */
+  .loopwrap{position:relative;width:min(680px,90%);margin:14px auto 0;aspect-ratio:1.7/1;}
+  .loopwrap svg{position:absolute;inset:0;width:100%;height:100%;}
+  .lnode{position:absolute;transform:translate(-50%,-50%);background:var(--paper);border:2.5px solid var(--ink);
+    border-radius:12px;box-shadow:3px 4px 0 rgba(30,27,22,.14);padding:10px 14px;text-align:center;width:190px;}
+  .lnode b{font-size:.98rem;} .lnode span{display:block;color:var(--muted);font-size:.78rem;margin-top:2px;}
+  .lnode.n1{left:50%;top:8%;} .lnode.n2{left:93%;top:52%;} .lnode.n3{left:50%;top:95%;} .lnode.n4{left:7%;top:52%;}
+
+  /* ---- Slide F: tool types ---- */
+  .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px;}
+  .tcard{border:2.5px solid var(--ink);border-radius:12px;background:var(--paper);padding:14px 16px;box-shadow:4px 5px 0 rgba(30,27,22,.13);}
+  .tcard h4{margin:0 0 8px;font-family:"Fraunces",serif;font-weight:700;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .tcard h4 .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);}
+  .tcard code{font-family:"JetBrains Mono",monospace;font-size:.76rem;color:var(--ink);}
+  .tcard p{margin:6px 0 0;color:var(--muted);font-size:.82rem;line-height:1.5;}
+  .tcard:nth-child(2) h4 .dot{background:var(--green);} .tcard:nth-child(3) h4 .dot{background:var(--purple);}
+  .tcard:nth-child(5) h4 .dot{background:var(--coral);} .tcard:nth-child(6) h4 .dot{background:var(--green);}
+</style>
+</head>
+<body>
+
+<!-- B · TRÍ NHỚ 4 TẦNG -->
+<section class="slide active">
+  <div class="stage">
+    <span class="tag">Mô hình · Trí nhớ</span>
+    <div class="eyebrow">Hermes ghi nhớ thế nào</div>
+    <h2 class="memhead">Trí nhớ Hermes: <span class="hl">3 tầng có sẵn</span> + 1 tầng cắm ngoài</h2>
+    <div class="builtin-cap">◆ Built-in — luôn bật</div>
+    <div class="tiers">
+      <div class="tier"><div class="badge">1</div><div><div class="tt">Hồ sơ nạp sẵn mỗi phiên <span style="color:var(--muted);font-weight:600">(có giới hạn)</span></div><div class="td">SOUL.md · USER.md · MEMORY.md · AGENTS.md — nạp cứng vào system prompt</div></div></div>
+      <div class="tier"><div class="badge">2</div><div><div class="tt">Kho hội thoại tra được</div><div class="td">state.db (SQLite + FTS5) — mọi tin nhắn, tìm bằng <code>session_search</code> (~20ms, miễn phí)</div></div></div>
+      <div class="tier"><div class="badge">3</div><div><div class="tt">Kỹ năng tự học</div><div class="td">thư mục <code>skills/</code> — agent tự viết & tái dùng (từ learning loop)</div></div></div>
+      <div class="tier plug"><div class="badge">4</div><div><div class="tt">Memory Provider — bộ nhớ mở rộng cắm ngoài</div><div class="td">Supermemory · Mem0 · Honcho… — semantic search / knowledge graph / tự trích xuất</div></div><div class="pulse">cắm ngoài · tùy chọn</div></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank">📄 docs · features/memory</a>
+  </div>
+</section>
+
+<!-- D · LEARNING LOOP -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Mô hình động · Learning loop</span>
+    <div class="eyebrow" style="text-align:center">Vòng tự cải thiện</div>
+    <h2 style="text-align:center;font-size:clamp(1.5rem,1rem+2vw,2.5rem)">Hermes <span class="hl">tự học</span> sau mỗi việc — không cần train lại</h2>
+    <div class="loopwrap">
+      <svg viewBox="0 0 680 400" fill="none">
+        <defs><path id="loop" d="M340,64 C520,64 620,150 620,200 C620,250 520,336 340,336 C160,336 60,250 60,200 C60,150 160,64 340,64 Z"/></defs>
+        <use href="#loop" stroke="#C9BFA8" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round"/>
+        <circle r="9" fill="#E4572E" stroke="#1E1B16" stroke-width="2">
+          <animateMotion dur="7s" repeatCount="indefinite"><mpath href="#loop"/></animateMotion>
+        </circle>
+      </svg>
+      <div class="lnode n1"><b>1 · Làm việc</b><span>tác vụ nhiều bước (≥5 tool-call)</span></div>
+      <div class="lnode n2"><b>2 · Review nền</b><span>tự phân tích trajectory</span></div>
+      <div class="lnode n3"><b>3 · Viết SKILL.md</b><span>"lessons, not logs" + vì sao</span></div>
+      <div class="lnode n4"><b>4 · Tái dùng</b><span>gặp việc tương tự → tự nạp</span></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank">📄 docs · features/skills</a>
+  </div>
+</section>
+
+<!-- F · CÁC LOẠI TOOL -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Danh sách tính năng · Tools</span>
+    <div class="eyebrow">70+ tool · ~28 toolset</div>
+    <h2 style="font-size:clamp(1.5rem,1rem+2vw,2.5rem)">Các loại <span class="hl">công cụ</span> tiêu biểu của Hermes</h2>
+    <div class="tools">
+      <div class="tcard"><h4><span class="dot"></span>Làm việc / hệ thống</h4><code>file · terminal · code_execution</code><p>Đọc–ghi file, chạy lệnh, chạy code</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Web & duyệt</h4><code>web · browser · vision · x_search</code><p>Tìm tin, đọc trang, điều khiển trình duyệt, "nhìn" ảnh</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Trí nhớ & Học</h4><code>memory · session_search · skills</code><p>Ghi nhớ, tra hội thoại cũ, tự tạo/dùng skill</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Tự động hóa</h4><code>cronjob · delegation · todo · kanban</code><p>Hẹn giờ, giao việc cho sub-agent, quản việc</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Sáng tạo media</h4><code>image_gen · video_gen · tts · spotify</code><p>Tạo ảnh/video/giọng đọc, phát nhạc</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Nhắn tin & tích hợp</h4><code>discord · feishu · homeassistant</code><p>Quản kênh chat, tài liệu, điều khiển nhà (IoT)</p></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/reference/toolsets-reference" target="_blank">📄 docs · reference/toolsets-reference</a>
+  </div>
+</section>
+
+<button class="nav prev" id="prev">‹</button>
+<button class="nav next" id="next">›</button>
+<div class="counter" id="counter">1 / 3</div>
+<script>
+  const s=[...document.querySelectorAll('.slide')];let i=0;
+  const c=document.getElementById('counter'),p=document.getElementById('prev'),n=document.getElementById('next');
+  function show(k){i=Math.max(0,Math.min(s.length-1,k));s.forEach((el,j)=>el.classList.toggle('active',j===i));
+    c.textContent=(i+1)+' / '+s.length;}
+  p.onclick=()=>show(i-1);n.onclick=()=>show(i+1);
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(i+1);if(e.key==='ArrowLeft')show(i-1);});
+  show(0);
+</script>
+</body>
+</html>

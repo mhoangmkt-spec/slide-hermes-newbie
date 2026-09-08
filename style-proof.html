@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Style proof · Hermes deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF4E3; --cream2:#F6ECD6; --paper:#FFFDF8;
+    --ink:#1E1B16; --sub:#4C4536; --muted:#7A7060;
+    --accent:#E4572E;            /* cam-đỏ */
+    --green:#234D2B; --purple:#8A7FD4; --coral:#F0A28E; --yellow:#F2C230;
+    --line:#1E1B16;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:#D9D2C2;font-family:"Be Vietnam Pro",system-ui,sans-serif;
+    color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+  /* nav */
+  .nav{position:fixed;top:50%;transform:translateY(-50%);z-index:30;width:46px;height:46px;border-radius:50%;
+    border:2px solid var(--ink);background:#fff;font-size:20px;cursor:pointer;display:grid;place-items:center;
+    box-shadow:3px 3px 0 var(--ink);}
+  .nav:active{transform:translateY(-50%) translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
+  .nav.prev{left:18px;} .nav.next{right:18px;}
+  .counter{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:30;font-size:12px;font-weight:700;
+    background:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 14px;box-shadow:2px 2px 0 var(--ink);}
+
+  .slide{position:fixed;inset:0;display:grid;place-items:center;padding:38px 78px;opacity:0;visibility:hidden;z-index:1;}
+  .slide.active{opacity:1;visibility:visible;z-index:2;}
+  .stage{position:relative;width:min(1500px,92vw);background:var(--cream);border:2.5px solid var(--ink);
+    border-radius:8px;box-shadow:10px 12px 0 rgba(30,27,22,.16);display:grid;align-content:center;
+    padding:clamp(30px,4vw,64px);overflow:hidden;}
+  @media(min-width:841px){.stage{width:min(1500px,90vw,calc(84vh*16/9));aspect-ratio:16/9;}}
+  .stage.green{background:var(--green);color:var(--cream);border-color:#0f2a15;}
+  .stage.paper{background:var(--paper);}
+
+  .tag{position:absolute;top:12px;right:14px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);background:#fff;border:1.5px solid var(--ink);border-radius:5px;padding:3px 8px;}
+  .stage.green .tag{color:#cbdcc9;background:transparent;border-color:#5f7d5f;}
+
+  /* sticker headline */
+  h1,h2{font-family:"Fraunces",Georgia,serif;font-weight:600;margin:0;line-height:1.06;letter-spacing:-.015em;}
+  .stick{display:inline-block;background:#FFFDF8;padding:.02em .28em;box-shadow:3px 4px 0 rgba(30,27,22,.14);
+    border:1px solid rgba(30,27,22,.12);}
+  .stick.a{transform:rotate(-1.6deg);} .stick.b{transform:rotate(1deg);margin-top:.12em;}
+  .hl{color:var(--accent);}
+  .stage.green .stick{background:#FFFDF8;color:var(--ink);}
+
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+  .stage.green .eyebrow{color:var(--coral);}
+  .lead{font-size:clamp(1rem,.9rem+.5vw,1.25rem);font-weight:500;color:var(--sub);line-height:1.55;max-width:54ch;}
+  .stage.green .lead{color:#e7ddc8;}
+  .meta{margin-top:22px;font-weight:600;color:var(--muted);font-size:1rem;}
+
+  /* cover bits */
+  .cover{display:grid;place-items:center;text-align:center;gap:6px;}
+  .cover h1{font-size:clamp(2.3rem,1rem+5vw,4.8rem);}
+  .brandchip{display:inline-flex;align-items:center;gap:10px;border:2px solid var(--ink);border-radius:999px;
+    background:#fff;padding:7px 8px 7px 18px;box-shadow:3px 3px 0 var(--ink);margin-bottom:26px;font-family:"Fraunces",serif;
+    font-weight:700;color:var(--accent);font-size:1.25rem;}
+  .brandchip b{background:var(--ink);color:var(--cream);font-family:"Be Vietnam Pro";font-size:.72rem;font-weight:700;
+    padding:6px 12px;border-radius:999px;letter-spacing:.02em;}
+  .coral-blob{position:absolute;width:52%;height:80%;right:-6%;bottom:-30%;background:var(--coral);border-radius:50%;z-index:0;opacity:.55;}
+
+  /* section diagram */
+  .ph{border:2px dashed rgba(251,244,227,.6);border-radius:12px;min-height:clamp(210px,32vh,320px);
+    display:grid;place-items:center;text-align:center;color:#cbdcc9;font-weight:600;padding:20px;line-height:1.6;
+    background:rgba(255,255,255,.04);}
+  .stage:not(.green) .ph{border-color:rgba(30,27,22,.35);color:var(--muted);background:rgba(30,27,22,.02);}
+
+  /* terminal / command */
+  .step-eye{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+  .step-eye .num{background:var(--ink);color:var(--cream);border-radius:6px;padding:2px 9px;font-family:"Fraunces",serif;}
+  .cmd-title{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(1.7rem,1rem+2.4vw,2.7rem);line-height:1.12;margin:0 0 20px;max-width:22ch;}
+  .term{border:2.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:5px 6px 0 rgba(30,27,22,.14);max-width:760px;}
+  .term .bar{background:#2b2b2b;padding:9px 14px;display:flex;gap:7px;align-items:center;}
+  .term .bar i{width:12px;height:12px;border-radius:50%;display:inline-block;}
+  .term .bar .r{background:#ff5f56;} .term .bar .y{background:#ffbd2e;} .term .bar .g{background:#27c93f;}
+  .term .bar span{margin-left:10px;color:#bbb;font-family:"JetBrains Mono",monospace;font-size:12px;}
+  .term pre{margin:0;background:#141414;color:#f3f3f3;font-family:"JetBrains Mono",monospace;
+    font-size:clamp(.85rem,.7rem+.4vw,1.02rem);line-height:1.7;padding:18px 20px;white-space:pre-wrap;}
+  .term .cm{color:#8a8a8a;} .term .ok{color:#7CD97C;}
+  .note{margin-top:18px;display:inline-block;border:2px dashed var(--ink);border-radius:8px;background:#fff;
+    padding:10px 14px;font-weight:600;font-size:.95rem;}
+
+  .grid{display:grid;gap:clamp(24px,3vw,52px);align-items:center;}
+  .grid.split{grid-template-columns:1.15fr .85fr;}
+
+  @media(max-width:840px){.slide{padding:14px;}.grid.split{grid-template-columns:1fr;}.nav.prev{left:6px;}.nav.next{right:6px;}}
+</style>
+</head>
+<body>
+
+<!-- 1 · COVER (brutalist đậm) -->
+<section class="slide active">
+  <div class="stage">
+    <span class="tag">Bìa · brutalist đậm</span>
+    <div class="coral-blob"></div>
+    <div class="cover" style="position:relative;z-index:1">
+      <div class="brandchip">Hermes <b>Trợ lý AI 24/7</b></div>
+      <div class="eyebrow">Trợ lý AI cho mọi công việc</div>
+      <h1>
+        <span class="stick a"><span class="hl">Hermes</span> Agent —</span><br>
+        <span class="stick b">trợ lý AI <span class="hl">học–hiểu</span></span><br>
+        <span class="stick a">phát triển cùng bạn</span>
+      </h1>
+      <div class="meta">Cài trên VPS · Hoạt động 24/7 · Chi phí siêu rẻ</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · SECTION MÀU (chuyển nhịp) -->
+<section class="slide">
+  <div class="stage green">
+    <span class="tag">Section màu · mô hình</span>
+    <div class="grid split">
+      <div>
+        <div class="eyebrow">Mô hình · Cài ở đâu</div>
+        <h2 style="font-size:clamp(2rem,1rem+3vw,3.5rem)">
+          <span class="stick a">Cài Hermes trên</span><br>
+          <span class="stick b"><span class="hl">Local</span> hoặc <span class="hl">VPS</span></span>
+        </h2>
+        <p class="lead" style="margin-top:20px">VPS luôn bật → agent chạy 24/7, nhắn cho bạn kể cả khi máy tắt.</p>
+      </div>
+      <div class="ph">SƠ ĐỒ LUỒNG (ảnh rộng)<br>Bạn (Telegram) ⇄ VPS ⇄ Hermes → gửi kết quả về</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · SLIDE LỆNH (nền kem sạch, dễ đọc) -->
+<section class="slide">
+  <div class="stage paper">
+    <span class="tag">Slide lệnh · nền sạch</span>
+    <div class="step-eye"><span class="num">Bước 1</span> Cài đặt</div>
+    <h2 class="cmd-title">Cài đặt Hermes Agent trên VPS của bạn</h2>
+    <div class="term">
+      <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>root@vps: ~</span></div>
+      <pre>curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+source ~/.bashrc
+hermes --version        <span class="cm"># kiểm tra cài xong</span>
+<span class="ok">Hermes v0.20  ✓ cài thành công</span></pre>
+    </div>
+    <div class="note">Trình cài <b>tự lo hết</b>: Python, Node, công cụ phụ — bạn không chuẩn bị gì.</div>
+  </div>
+</section>
+
+<button class="nav prev" id="prev">‹</button>
+<button class="nav next" id="next">›</button>
+<div class="counter" id="counter">1 / 3</div>
+
+<script>
+  const s=[...document.querySelectorAll('.slide')];let i=0;
+  const c=document.getElementById('counter'),p=document.getElementById('prev'),n=document.getElementById('next');
+  function show(k){i=Math.max(0,Math.min(s.length-1,k));s.forEach((el,j)=>el.classList.toggle('active',j===i));
+    c.textContent=(i+1)+' / '+s.length;p.disabled=i===0;n.disabled=i===s.length-1;}
+  p.onclick=()=>show(i-1);n.onclick=()=>show(i+1);
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(i+1);if(e.key==='ArrowLeft')show(i-1);});
+  show(0);
+</script>
+</body>
+</html>

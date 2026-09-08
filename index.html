@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hermes Agent cho người mới</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--cream:#FBF4E3;--cream2:#F6ECD6;--paper:#FFFDF8;--ink:#1E1B16;--sub:#4C4536;--muted:#7A7060;
+    --accent:#E4572E;--green:#234D2B;--purple:#8A7FD4;--coral:#F0A28E;--yellow:#F2C230;}
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:#D9D2C2;font-family:"Be Vietnam Pro",system-ui,sans-serif;color:var(--ink);
+    -webkit-font-smoothing:antialiased;overflow:hidden;}
+
+  .nav{position:fixed;top:50%;transform:translateY(-50%);z-index:40;width:46px;height:46px;border-radius:50%;
+    border:2px solid var(--ink);background:#fff;font-size:20px;cursor:pointer;display:grid;place-items:center;box-shadow:3px 3px 0 var(--ink);}
+  .nav:active{transform:translateY(-50%) translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
+  .nav.prev{left:18px;}.nav.next{right:18px;}
+  .counter{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:40;font-size:12px;font-weight:700;
+    background:#fff;border:2px solid var(--ink);border-radius:999px;padding:4px 14px;box-shadow:2px 2px 0 var(--ink);}
+
+  .slide{position:fixed;inset:0;display:grid;place-items:center;padding:34px 76px;opacity:0;visibility:hidden;z-index:1;}
+  .slide.active{opacity:1;visibility:visible;z-index:2;}
+  .stage{position:relative;width:min(1500px,92vw);background:var(--cream);border:2.5px solid var(--ink);border-radius:8px;
+    box-shadow:10px 12px 0 rgba(30,27,22,.16);display:grid;align-content:center;padding:clamp(30px,3.4vh,56px) clamp(46px,5.5vw,96px);overflow:hidden;}
+  @media(min-width:841px){.stage{width:min(1500px,90vw,calc(84vh*16/9));aspect-ratio:16/9;overflow-y:auto;}}
+  .stage.green{background:var(--green);color:var(--cream);border-color:#0f2a15;}
+  .stage.purple{background:var(--purple);color:#20122e;border-color:#3a2d63;}
+  .stage.paper{background:var(--paper);}
+
+  .tag{position:absolute;top:11px;right:14px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);background:#fff;border:1.5px solid var(--ink);border-radius:5px;padding:3px 8px;}
+  .stage.green .tag{color:#cbdcc9;background:transparent;border-color:#5f7d5f;}
+  .stage.purple .tag{color:#3a2d63;background:rgba(255,255,255,.5);border-color:#3a2d63;}
+
+  h1,h2{font-family:"Fraunces",Georgia,serif;font-weight:600;margin:0;line-height:1.08;letter-spacing:-.015em;}
+  .stick{display:inline-block;background:#FFFDF8;padding:.02em .28em;box-shadow:3px 4px 0 rgba(30,27,22,.14);border:1px solid rgba(30,27,22,.12);}
+  .stick.a{transform:rotate(-1.5deg);}.stick.b{transform:rotate(1deg);margin-top:.1em;}
+  .stage.green .stick{color:var(--ink);}
+  .hl{color:var(--accent);}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+  .stage.green .eyebrow{color:var(--coral);}
+  .lead{font-size:clamp(1rem,.9rem+.5vw,1.2rem);font-weight:500;color:var(--sub);line-height:1.55;max-width:56ch;}
+  .stage.green .lead{color:#e7ddc8;}
+  .chot{margin-top:14px;font-weight:700;font-size:clamp(1.05rem,.9rem+.5vw,1.25rem);line-height:1.4;
+    border-top:2px solid var(--ink);padding-top:12px;max-width:60ch;display:inline-block;}
+
+  .grid{display:grid;gap:clamp(20px,2.6vw,44px);align-items:center;}
+  .grid.split{grid-template-columns:1.25fr .75fr;}
+  .grid.split-left{grid-template-columns:.85fr 1.15fr;}
+  .grid.split-left .col-text{order:2;}.grid.split-left .col-media{order:1;}
+
+  .src{position:absolute;left:16px;bottom:12px;z-index:5;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+    color:var(--ink);text-decoration:none;background:#fff;border:1.5px solid var(--ink);border-radius:999px;padding:5px 12px;
+    box-shadow:2px 2px 0 var(--ink);font-family:"JetBrains Mono",monospace;}
+  .src:hover{background:#FFF3D6;}
+  .stage.green .src,.stage.purple .src{box-shadow:2px 2px 0 rgba(0,0,0,.35);}
+
+  .cover{display:grid;place-items:center;text-align:center;gap:6px;position:relative;z-index:1;}
+  .cover h1{font-size:clamp(2.3rem,1rem+5vw,4.8rem);}
+  .brandchip{display:inline-flex;align-items:center;gap:10px;border:2px solid var(--ink);border-radius:999px;background:#fff;
+    padding:7px 8px 7px 18px;box-shadow:3px 3px 0 var(--ink);margin-bottom:24px;font-family:"Fraunces",serif;font-weight:700;color:var(--accent);font-size:1.25rem;}
+  .brandchip b{background:var(--ink);color:var(--cream);font-family:"Be Vietnam Pro";font-size:.72rem;font-weight:700;padding:6px 12px;border-radius:999px;}
+  .kick{font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+  .meta{margin-top:20px;font-weight:600;color:var(--muted);font-size:1.05rem;}
+  .coral-blob{position:absolute;width:50%;height:78%;right:-5%;bottom:-28%;background:var(--coral);border-radius:50%;z-index:0;opacity:.5;}
+
+  .check{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:14px;}
+  .check li{display:flex;gap:13px;align-items:flex-start;font-size:1.24rem;}
+  .check .bx{flex:0 0 auto;width:24px;height:24px;border:2px solid var(--ink);border-radius:6px;margin-top:2px;display:grid;place-items:center;color:var(--accent);font-weight:800;}
+  .points{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:13px;max-width:58ch;}
+  .point{display:flex;gap:13px;align-items:flex-start;font-size:1.1rem;}
+  .point .n{flex:0 0 auto;width:30px;height:30px;border-radius:8px;background:var(--ink);color:var(--cream);font-family:"Fraunces",serif;
+    font-weight:700;font-size:1rem;display:grid;place-items:center;}
+  .point b{font-weight:700;}.point .d{display:block;color:var(--muted);font-size:.9rem;line-height:1.5;margin-top:2px;}
+
+  .step-eye{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+  .step-eye .num{background:var(--ink);color:var(--cream);border-radius:7px;padding:3px 11px;font-family:"Fraunces",serif;}
+  .cmd-title{font-family:"Fraunces",serif;font-weight:600;font-size:clamp(2rem,1.2rem+2.7vw,3.2rem);line-height:1.12;margin:0 0 24px;max-width:24ch;}
+
+  .term{border:2.5px solid var(--ink);border-radius:10px;overflow:hidden;box-shadow:5px 6px 0 rgba(30,27,22,.14);max-width:820px;}
+  .term .bar{background:#2b2b2b;padding:9px 14px;display:flex;gap:7px;align-items:center;}
+  .term .bar i{width:12px;height:12px;border-radius:50%;display:inline-block;}
+  .term .bar .r{background:#ff5f56;}.term .bar .y{background:#ffbd2e;}.term .bar .g{background:#27c93f;}
+  .term .bar span{margin-left:10px;color:#bbb;font-family:"JetBrains Mono",monospace;font-size:12px;}
+  .term pre{margin:0;background:#141414;color:#f3f3f3;font-family:"JetBrains Mono",monospace;font-size:clamp(.94rem,.78rem+.45vw,1.18rem);
+    line-height:1.7;padding:18px 22px;white-space:pre-wrap;overflow-x:auto;}
+  .term .cm{color:#8a8a8a;}.term .ok{color:#7CD97C;}
+  .note{margin-top:16px;display:inline-block;border:2px dashed var(--ink);border-radius:8px;background:#fff;padding:10px 14px;font-weight:600;font-size:1.08rem;max-width:62ch;}
+  .warn{margin-top:14px;display:inline-flex;gap:8px;align-items:flex-start;border:2px dashed var(--accent);border-radius:8px;background:#fff;
+    padding:10px 14px;font-weight:600;font-size:.92rem;color:var(--ink);max-width:60ch;}
+
+  .ph{border:2px dashed rgba(30,27,22,.35);border-radius:12px;min-height:clamp(180px,26vh,300px);display:grid;place-items:center;text-align:center;
+    color:var(--muted);font-weight:600;padding:18px;line-height:1.6;background:rgba(30,27,22,.02);font-size:.9rem;}
+  .stage.green .ph{border-color:rgba(251,244,227,.5);color:#cbdcc9;background:rgba(255,255,255,.04);}
+  .ph.tall{min-height:100%;}
+
+  .tree{border:2.5px solid var(--ink);border-radius:10px;background:var(--paper);font-family:"JetBrains Mono",monospace;
+    font-size:clamp(.94rem,.78rem+.45vw,1.18rem);line-height:1.7;padding:16px 20px;box-shadow:4px 5px 0 rgba(30,27,22,.13);white-space:pre;overflow-x:auto;}
+  .tree .cm{color:var(--muted);}
+
+  /* compare (Hermes là gì) */
+  .cmp{border:2.5px solid var(--ink);border-radius:12px;padding:14px 16px;background:var(--paper);box-shadow:4px 5px 0 rgba(30,27,22,.13);}
+  .cmp.mut{background:#F1E9DA;border-style:dashed;}
+  .cmp h4{margin:0 0 6px;font-family:"Fraunces",serif;font-weight:700;font-size:1.02rem;}
+  .cmp ul{margin:0;padding-left:16px;color:var(--sub);font-size:.9rem;line-height:1.5;display:flex;flex-direction:column;gap:4px;}
+
+  /* 5 trụ */
+  .pillars{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px;}
+  .pcard{border:2.5px solid var(--ink);border-radius:12px;background:var(--paper);padding:18px 12px;text-align:center;box-shadow:4px 5px 0 rgba(30,27,22,.13);}
+  .pcard .pi{width:46px;height:46px;margin:0 auto 10px;border-radius:12px;background:var(--ink);color:var(--cream);display:grid;place-items:center;font-family:"Fraunces",serif;font-weight:700;font-size:1.4rem;}
+  .pcard b{display:block;font-size:1.02rem;margin-bottom:4px;}
+  .pcard span{color:var(--muted);font-size:.8rem;line-height:1.4;}
+  .pcard:nth-child(2) .pi{background:var(--green);}.pcard:nth-child(3) .pi{background:var(--accent);}
+  .pcard:nth-child(4) .pi{background:var(--purple);}.pcard:nth-child(5) .pi{background:#B8791C;}
+
+  .builtin-cap{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:2px 2px;}
+  .tiers{display:flex;flex-direction:column;gap:11px;margin-top:14px;}
+  .tier{display:flex;gap:15px;align-items:center;border:2.5px solid var(--ink);border-radius:12px;background:var(--paper);
+    padding:12px 18px;box-shadow:4px 5px 0 rgba(30,27,22,.13);opacity:0;transform:translateY(14px);}
+  .slide.active .tier{animation:rise .5s cubic-bezier(.16,1,.3,1) forwards;}
+  .slide.active .tier:nth-child(1){animation-delay:.05s;}.slide.active .tier:nth-child(2){animation-delay:.2s;}
+  .slide.active .tier:nth-child(3){animation-delay:.35s;}.slide.active .tier:nth-child(4){animation-delay:.55s;}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  .tier .badge{flex:0 0 auto;width:40px;height:40px;border-radius:10px;background:var(--ink);color:var(--cream);font-family:"Fraunces",serif;
+    font-weight:700;font-size:1.25rem;display:grid;place-items:center;}
+  .tier .tt{font-weight:700;font-size:1.16rem;}.tier .td{color:var(--muted);font-size:.98rem;margin-top:2px;}
+  .tier code{font-family:"JetBrains Mono",monospace;font-size:.85em;}
+  .tier.plug{border-style:dashed;background:rgba(138,127,212,.12);}.tier.plug .badge{background:var(--purple);}
+  .tier.plug .pulse{margin-left:auto;font-size:.75rem;font-weight:800;color:var(--purple);border:1.5px dashed var(--purple);border-radius:999px;
+    padding:4px 11px;white-space:nowrap;animation:blink 1.6s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:.45;}50%{opacity:1;}}
+
+  .loopwrap{position:relative;width:min(660px,92%);margin:8px auto 0;aspect-ratio:1.8/1;}
+  .loopwrap svg{position:absolute;inset:0;width:100%;height:100%;}
+  .lnode{position:absolute;transform:translate(-50%,-50%);background:var(--paper);border:2.5px solid var(--ink);border-radius:12px;
+    box-shadow:3px 4px 0 rgba(30,27,22,.14);padding:9px 14px;text-align:center;width:200px;}
+  .lnode b{font-size:.98rem;}.lnode span{display:block;color:var(--muted);font-size:.76rem;margin-top:2px;}
+  .lnode.n1{left:50%;top:9%;}.lnode.n2{left:92%;top:52%;}.lnode.n3{left:50%;top:94%;}.lnode.n4{left:8%;top:52%;}
+
+  .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:16px;}
+  .tcard{border:2.5px solid var(--ink);border-radius:12px;background:var(--paper);padding:13px 16px;box-shadow:4px 5px 0 rgba(30,27,22,.13);}
+  .tcard h4{margin:0 0 7px;font-family:"Fraunces",serif;font-weight:700;font-size:1.02rem;display:flex;gap:8px;align-items:center;}
+  .tcard h4 .dot{width:11px;height:11px;border-radius:3px;background:var(--accent);}
+  .tcard code{font-family:"JetBrains Mono",monospace;font-size:.74rem;color:var(--ink);}
+  .tcard p{margin:5px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45;}
+  .tcard:nth-child(2) .dot{background:var(--green);}.tcard:nth-child(3) .dot{background:var(--purple);}
+  .tcard:nth-child(5) .dot{background:var(--coral);}.tcard:nth-child(6) .dot{background:var(--green);}
+
+  .flowline{stroke:var(--coral);stroke-width:3;stroke-dasharray:8 8;fill:none;animation:march 1s linear infinite;}
+  @keyframes march{to{stroke-dashoffset:-16;}}
+  .arch-cron{animation:blink 1.6s ease-in-out infinite;}
+
+  .road{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:10px;margin-top:18px;}
+  .road .step{border:2.5px solid var(--ink);border-radius:11px;padding:13px;background:var(--paper);color:var(--ink);box-shadow:3px 4px 0 rgba(0,0,0,.2);}
+  .road .step .s{font-family:"Fraunces",serif;font-weight:700;font-size:1.1rem;color:var(--accent);}
+  .road .step b{display:block;margin-top:4px;font-size:.92rem;line-height:1.3;}
+
+  @media(max-width:840px){.slide{padding:14px;}.grid.split,.grid.split-left{grid-template-columns:1fr;}
+    .grid.split-left .col-text{order:1;}.grid.split-left .col-media{order:2;}
+    .tools,.pillars{grid-template-columns:1fr;}.road{grid-auto-flow:row;grid-auto-columns:auto;}.nav.prev{left:6px;}.nav.next{right:6px;}}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- 01 · COVER -->
+<section class="slide active">
+  <div class="stage">
+    <span class="tag">Bìa</span>
+    <div class="grid" style="grid-template-columns:1.1fr .9fr;gap:clamp(20px,3vw,50px);align-items:center;text-align:left">
+      <div>
+        <div class="brandchip">Hermes <b>Trợ lý AI 24/7</b></div>
+        <div class="kick" style="margin-bottom:12px">Trợ lý AI cho mọi công việc</div>
+        <h1 style="text-align:left"><span class="stick a"><span class="hl">Hermes</span> Agent —</span><br><span class="stick b">trợ lý AI <span class="hl">học–hiểu</span></span><br><span class="stick a">phát triển cùng bạn</span></h1>
+        <div class="meta">Cài trên VPS · Hoạt động 24/7 · Chi phí siêu rẻ</div>
+      </div>
+      <div style="position:relative;display:grid;place-items:center;min-height:0">
+        <div style="position:absolute;width:86%;height:86%;right:2%;bottom:2%;background:var(--coral);border-radius:50%;opacity:.42;z-index:0"></div>
+        <img src="assets/hermes-hero.png" alt="Hermes assistant" style="position:relative;z-index:1;width:100%;max-width:430px;height:auto">
+      </div>
+    </div>
+    <a class="src" href="https://github.com/NousResearch/hermes-agent" target="_blank">🔗 github.com/NousResearch/hermes-agent</a>
+  </div>
+</section>
+
+<!-- 02 · CUỐI VIDEO CÓ GÌ -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Mở đầu</span>
+    <div class="grid split">
+      <div>
+        <div class="eyebrow">Cuối video bạn có gì</div>
+        <h2 style="font-size:clamp(1.7rem,1rem+2.6vw,3rem)"><span class="stick a">Bạn nhận được gì</span><br><span class="stick b">sau khi xem xong</span></h2>
+        <ul class="check">
+          <li><span class="bx">✓</span><span>Một trợ lý chạy <b>24/7 trên VPS</b></span></li>
+          <li><span class="bx">✓</span><span>Trò chuyện qua <b>Telegram/Discord</b> như một nhân viên</span></li>
+          <li><span class="bx">✓</span><span>Agent <b>tự ghi lại bài học</b> sau mỗi lần làm việc</span></li>
+        </ul>
+      </div>
+      <div class="col-media"><img src="assets/hermes-s2.png" alt="Nhận kết quả qua điện thoại" style="width:100%;max-width:360px;height:auto;display:block;margin:0 auto"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 · HERMES LÀ GÌ -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Hiểu Hermes · Định nghĩa</span>
+    <div class="grid split">
+      <div>
+        <div class="eyebrow">Hermes Agent là gì</div>
+        <h2 style="font-size:clamp(1.9rem,1.1rem+2.6vw,3.15rem)">Không phải chatbot — mà là một <span class="hl">"nhân viên AI"</span> tự làm việc</h2>
+        <ul class="points">
+          <li class="point"><span class="n">◆</span><span>Agent <b>mã nguồn mở</b> của Nous Research (miễn phí)<span class="d">chạy như 1 daemon bền trên máy/VPS — 24/7, không mất khi tắt tab</span></span></li>
+          <li class="point"><span class="n">◆</span><span><b>Tự làm việc nhiều bước · nhớ bạn · tự học</b><span class="d">liên lạc qua Telegram / Discord / Slack…</span></span></li>
+        </ul>
+        <div class="chot">Chatbot: hỏi–đáp rồi quên. Hermes: đồng đội ở lại, ngày càng giỏi.</div>
+      </div>
+      <div class="col-media"><div class="grid" style="gap:12px">
+        <div class="cmp mut"><h4>Chatbot</h4><ul><li>Chỉ đáp khi được hỏi</li><li>Tắt là quên hết</li><li>Không tự chạy</li></ul></div>
+        <div class="cmp"><h4>Agent · Hermes</h4><ul><li>Nhớ bạn qua nhiều phiên</li><li>Tự chạy theo lịch</li><li>Làm cả khi bạn offline</li></ul></div>
+      </div></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com" target="_blank">🔗 hermes-agent.nousresearch.com</a>
+  </div>
+</section>
+
+<!-- 04 · 5 TRỤ -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Hiểu Hermes · 5 trụ</span>
+    <div class="eyebrow">Hermes đặc biệt ở đâu</div>
+    <h2 style="font-size:clamp(1.9rem,1.1rem+2.6vw,3.15rem)">5 trụ cột khiến <span class="hl">Hermes khác biệt</span></h2>
+    <div class="pillars">
+      <div class="pcard"><div class="pi">1</div><b>Memory</b><span>nhớ bền qua nhiều phiên</span></div>
+      <div class="pcard"><div class="pi">2</div><b>Skills</b><span>kỹ năng tự tạo, tái dùng</span></div>
+      <div class="pcard"><div class="pi">3</div><b>Soul</b><span>SOUL.md — danh tính, giọng</span></div>
+      <div class="pcard"><div class="pi">4</div><b>Crons</b><span>tự chạy việc định kỳ</span></div>
+      <div class="pcard"><div class="pi">5</div><b>Self-improving</b><span>tự giỏi lên sau mỗi việc</span></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/user-guide/features/overview" target="_blank">📄 docs · features/overview</a>
+  </div>
+</section>
+
+<!-- 05 · CÁC LOẠI TOOL -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Hiểu Hermes · Tools</span>
+    <div class="eyebrow">70+ tool · ~28 toolset</div>
+    <h2 style="font-size:clamp(1.9rem,1.1rem+2.6vw,3.15rem)">Hermes <span class="hl">làm được gì</span> — các loại công cụ tiêu biểu</h2>
+    <div class="tools">
+      <div class="tcard"><h4><span class="dot"></span>Làm việc / hệ thống</h4><code>file · terminal · code_execution</code><p>Đọc–ghi file, chạy lệnh, chạy code</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Web & duyệt</h4><code>web · browser · vision · x_search</code><p>Tìm tin, đọc trang, điều khiển trình duyệt, "nhìn" ảnh</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Trí nhớ & Học</h4><code>memory · session_search · skills</code><p>Ghi nhớ, tra hội thoại cũ, tự tạo/dùng skill</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Tự động hóa</h4><code>cronjob · delegation · todo · kanban</code><p>Hẹn giờ, giao việc cho sub-agent, quản việc</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Sáng tạo media</h4><code>image_gen · video_gen · tts · spotify</code><p>Tạo ảnh/video/giọng đọc, phát nhạc</p></div>
+      <div class="tcard"><h4><span class="dot"></span>Nhắn tin & tích hợp</h4><code>discord · feishu · homeassistant</code><p>Quản kênh chat, tài liệu, điều khiển nhà (IoT)</p></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/reference/toolsets-reference" target="_blank">📄 docs · reference/toolsets-reference</a>
+  </div>
+</section>
+
+<!-- 06 · TRÍ NHỚ 4 TẦNG -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Hiểu Hermes · Trí nhớ</span>
+    <div class="eyebrow">Hermes ghi nhớ thế nào</div>
+    <h2 style="font-size:clamp(1.9rem,1.1rem+2.6vw,3.15rem)">Trí nhớ Hermes: <span class="hl">3 tầng có sẵn</span> + 1 tầng cắm ngoài</h2>
+    <div class="builtin-cap">◆ Built-in — luôn bật</div>
+    <div class="tiers">
+      <div class="tier"><div class="badge">1</div><div><div class="tt">Hồ sơ nạp sẵn mỗi phiên <span style="color:var(--muted);font-weight:600">(có giới hạn)</span></div><div class="td"><code>SOUL.md · USER.md · MEMORY.md · AGENTS.md</code> — nạp cứng vào system prompt</div></div></div>
+      <div class="tier"><div class="badge">2</div><div><div class="tt">Kho hội thoại tra được</div><div class="td"><code>state.db</code> (SQLite + FTS5) — mọi tin nhắn, tìm bằng <code>session_search</code> (~20ms, miễn phí)</div></div></div>
+      <div class="tier"><div class="badge">3</div><div><div class="tt">Kỹ năng tự học</div><div class="td">thư mục <code>skills/</code> — agent tự viết & tái dùng (từ learning loop)</div></div></div>
+      <div class="tier plug"><div class="badge">4</div><div><div class="tt">Memory Provider — bộ nhớ mở rộng cắm ngoài</div><div class="td">Supermemory · Mem0 · Honcho… — semantic search / knowledge graph / tự trích xuất</div></div><div class="pulse">cắm ngoài · tùy chọn</div></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/user-guide/features/memory" target="_blank">📄 docs · features/memory</a>
+  </div>
+</section>
+
+<!-- 07 · LEARNING LOOP -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Hiểu Hermes · Learning loop</span>
+    <div class="eyebrow" style="text-align:center">Vòng tự cải thiện</div>
+    <h2 style="text-align:center;font-size:clamp(1.9rem,1.1rem+2.6vw,3.15rem)">Hermes <span class="hl">tự học</span> sau mỗi việc — không cần train lại</h2>
+    <div class="loopwrap">
+      <svg viewBox="0 0 660 380" fill="none">
+        <defs><path id="loop" d="M330,58 C500,58 600,142 600,190 C600,238 500,322 330,322 C160,322 60,238 60,190 C60,142 160,58 330,58 Z"/></defs>
+        <use href="#loop" stroke="#C9BFA8" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round"/>
+        <circle r="9" fill="#E4572E" stroke="#1E1B16" stroke-width="2"><animateMotion dur="7s" repeatCount="indefinite"><mpath href="#loop"/></animateMotion></circle>
+      </svg>
+      <div class="lnode n1"><b>1 · Làm việc</b><span>tác vụ nhiều bước (≥5 tool-call)</span></div>
+      <div class="lnode n2"><b>2 · Review nền</b><span>tự phân tích trajectory</span></div>
+      <div class="lnode n3"><b>3 · Viết SKILL.md</b><span>"lessons, not logs" + vì sao</span></div>
+      <div class="lnode n4"><b>4 · Tái dùng</b><span>gặp việc tương tự → tự nạp</span></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/user-guide/features/skills" target="_blank">📄 docs · features/skills</a>
+  </div>
+</section>
+
+<!-- 08 · KIẾN TRÚC & LUỒNG (green) -->
+<section class="slide">
+  <div class="stage green">
+    <span class="tag">Hiểu Hermes · Kiến trúc</span>
+    <div class="eyebrow">Hermes chạy ở đâu · luồng hoạt động</div>
+    <h2 style="font-size:clamp(1.5rem,1rem+2vw,2.4rem)"><span class="stick a">Hermes = 1 daemon bền:</span> <span class="stick b">Gateway → Agent → bộ não</span></h2>
+    <svg viewBox="0 0 1040 430" style="width:100%;max-width:1040px;margin-top:8px;">
+      <rect x="255" y="60" width="760" height="330" rx="16" fill="none" stroke="#cbdcc9" stroke-width="2" stroke-dasharray="7 7"/>
+      <text x="270" y="46" fill="#cbdcc9" font-size="15" font-weight="700" font-family="Be Vietnam Pro">HOST — Local hoặc VPS (chạy 24/7)</text>
+      <path class="flowline" d="M210,205 H300"/>
+      <path class="flowline" d="M470,205 H540"/>
+      <path class="flowline" d="M710,180 L800,132"/>
+      <path class="flowline" d="M710,230 L800,300"/>
+      <path class="flowline" d="M625,300 V262" stroke="#F2C230"/>
+      <g font-family="Be Vietnam Pro"><rect x="40" y="168" width="170" height="74" rx="11" fill="#FFFDF8" stroke="#1E1B16" stroke-width="2.5"/>
+        <text x="125" y="200" text-anchor="middle" fill="#1E1B16" font-size="18" font-weight="700">Bạn</text>
+        <text x="125" y="222" text-anchor="middle" fill="#7A7060" font-size="12">Telegram / Discord</text></g>
+      <g font-family="Be Vietnam Pro"><rect x="300" y="168" width="170" height="74" rx="11" fill="#FFFDF8" stroke="#1E1B16" stroke-width="2.5"/>
+        <text x="385" y="204" text-anchor="middle" fill="#1E1B16" font-size="18" font-weight="700">① Gateway</text>
+        <text x="385" y="224" text-anchor="middle" fill="#7A7060" font-size="11">cổng liên lạc</text></g>
+      <g font-family="Be Vietnam Pro"><rect x="540" y="168" width="170" height="74" rx="11" fill="#FFFDF8" stroke="#1E1B16" stroke-width="2.5"/>
+        <text x="625" y="204" text-anchor="middle" fill="#1E1B16" font-size="18" font-weight="700">② Agent</text>
+        <text x="625" y="224" text-anchor="middle" fill="#7A7060" font-size="11">lõi điều phối</text></g>
+      <g font-family="Be Vietnam Pro"><rect x="800" y="96" width="200" height="72" rx="11" fill="#FFF3D6" stroke="#1E1B16" stroke-width="2.5"/>
+        <text x="900" y="128" text-anchor="middle" fill="#1E1B16" font-size="16" font-weight="700">Model · bộ não</text>
+        <text x="900" y="148" text-anchor="middle" fill="#7A7060" font-size="11">DeepSeek/OpenAI… (API ngoài)</text></g>
+      <g font-family="Be Vietnam Pro"><rect x="800" y="264" width="200" height="72" rx="11" fill="#FFFDF8" stroke="#1E1B16" stroke-width="2.5"/>
+        <text x="900" y="296" text-anchor="middle" fill="#1E1B16" font-size="16" font-weight="700">Terminal backend</text>
+        <text x="900" y="316" text-anchor="middle" fill="#7A7060" font-size="11">nơi làm việc: local/Docker/SSH</text></g>
+      <g class="arch-cron" font-family="Be Vietnam Pro"><rect x="540" y="300" width="170" height="48" rx="10" fill="#F2C230" stroke="#1E1B16" stroke-width="2.5"/>
+        <text x="625" y="330" text-anchor="middle" fill="#1E1B16" font-size="14" font-weight="700">⏰ Cron · hẹn giờ</text></g>
+    </svg>
+    <a class="src" href="https://hermes-agent.nousresearch.com/docs/developer-guide/architecture" target="_blank">📄 docs · developer-guide/architecture</a>
+  </div>
+</section>
+
+<!-- 09 · CHUẨN BỊ -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Cài đặt · Chuẩn bị</span>
+    <div class="eyebrow">Chuẩn bị</div>
+    <h2 class="cmd-title">Chuẩn bị những gì để cài đặt Hermes Agent</h2>
+    <ul class="check">
+      <li><span class="bx">✓</span><span>VPS <b>Ubuntu, ~2GB RAM</b></span></li>
+      <li><span class="bx">✓</span><span><b>IP · user · mật khẩu</b> đăng nhập VPS</span></li>
+      <li><span class="bx">✓</span><span>App <b>Telegram/Discord</b></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 10 · SSH -->
+<section class="slide">
+  <div class="stage paper">
+    <span class="tag">Cài đặt · SSH</span>
+    <div class="step-eye"><span class="num">Vào VPS</span> SSH</div>
+    <h2 class="cmd-title">Làm quen với SSH lên VPS để cài Hermes Agent</h2>
+    <div class="term"><div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>PowerShell</span></div><pre>ssh root@&lt;IP-của-bạn&gt;</pre></div>
+    <div class="warn">⚠️ Mật khẩu không hiện ký tự khi gõ — bình thường, cứ Enter.</div>
+  </div>
+</section>
+
+<!-- 11 · BƯỚC 1 CÀI -->
+<section class="slide">
+  <div class="stage paper">
+    <span class="tag">Cài đặt · Bước 1</span>
+    <div class="step-eye"><span class="num">Bước 1</span> Cài đặt</div>
+    <h2 class="cmd-title">Cài đặt Hermes Agent trên VPS của bạn</h2>
+    <div class="term"><div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>root@vps: ~</span></div><pre>curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+source ~/.bashrc
+hermes --version        <span class="cm"># kiểm tra cài xong</span>
+<span class="ok">Hermes v0.20  ✓ cài thành công</span></pre></div>
+    <div class="note">Trình cài <b>tự lo hết</b>: Python, Node, công cụ phụ — bạn không cần chuẩn bị gì cả.</div>
+  </div>
+</section>
+
+<!-- 12 · BƯỚC 2 MODEL -->
+<section class="slide">
+  <div class="stage paper">
+    <span class="tag">Cài đặt · Bước 2</span>
+    <div class="step-eye"><span class="num">Bước 2</span> Chọn bộ não</div>
+    <h2 class="cmd-title">Chọn Provider / Model AI cho Agent</h2>
+    <div class="term"><div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>root@vps: ~</span></div><pre>hermes setup        <span class="cm"># chọn nhà cung cấp + model</span>
+hermes model        <span class="cm"># đổi model bất cứ lúc nào</span></pre></div>
+    <div class="note">Video này đi theo <b>DeepSeek</b> — rẻ, đủ mạnh cho việc chạy hằng ngày.</div>
+  </div>
+</section>
+
+<!-- 13 · DEEPSEEK 1/2 -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Cài đặt · DeepSeek</span>
+    <div class="step-eye"><span class="num">API 1/2</span> Mua DeepSeek</div>
+    <h2 class="cmd-title">Đăng ký + nạp tiền trước — 2 phút</h2>
+    <ul class="points">
+      <li class="point"><span class="n">1</span><span>Vào <b>platform.deepseek.com</b> → đăng ký (Google/email)</span></li>
+      <li class="point"><span class="n">2</span><span>Mở <b>Top up / Nạp số dư</b> → nạp trước <b>~$2–5</b></span></li>
+    </ul>
+    <div class="warn">⚠️ DeepSeek trả trước — chưa nạp thì key không chạy.</div>
+  </div>
+</section>
+
+<!-- 14 · DEEPSEEK 2/2 -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Cài đặt · DeepSeek</span>
+    <div class="step-eye"><span class="num">API 2/2</span> Tạo key</div>
+    <h2 class="cmd-title">Tạo API Key cấp quyền cho Hermes</h2>
+    <ul class="points">
+      <li class="point"><span class="n">1</span><span>Sidebar trái → <b>API keys</b> → <b>Create new API key</b></span></li>
+      <li class="point"><span class="n">2</span><span>Đặt tên (vd <b>hermes</b>) → copy key dạng <b>sk-…</b> ngay</span></li>
+    </ul>
+    <div class="warn">⚠️ Key chỉ hiện 1 lần · đừng dán vào chat/công khai.</div>
+  </div>
+</section>
+
+<!-- 15 · CẮM DEEPSEEK -->
+<section class="slide">
+  <div class="stage paper">
+    <span class="tag">Cài đặt · DeepSeek</span>
+    <div class="step-eye"><span class="num">Cắm key</span> DeepSeek → Hermes</div>
+    <h2 class="cmd-title">Cắm DeepSeek vào Hermes: 2 bước là xong</h2>
+    <div class="term"><div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>root@vps: ~</span></div><pre><span class="cm"># 1) Dán key vào file ~/.hermes/.env</span>
+DEEPSEEK_API_KEY=sk-xxxxxxxx
+
+<span class="cm"># 2) Chọn DeepSeek làm bộ não</span>
+hermes model     <span class="cm"># provider: DeepSeek → deepseek-v4-flash</span></pre></div>
+    <div class="note">Kiểm tra: gõ <b>hermes</b> → hỏi 1 câu → Hermes trả lời = đã cắm đúng.</div>
+  </div>
+</section>
+
+<!-- 16 · BƯỚC 3 TELEGRAM -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Cài đặt · Telegram</span>
+    <div class="step-eye"><span class="num">Bước 3</span> Nối Telegram</div>
+    <h2 class="cmd-title">Setup Telegram làm gateway trò chuyện</h2>
+    <ul class="points">
+      <li class="point"><span class="n">1</span><span>Mở <b>@BotFather</b> → <b>/newbot</b></span></li>
+      <li class="point"><span class="n">2</span><span>Đặt tên + username kết thúc <b>bot</b></span></li>
+      <li class="point"><span class="n">3</span><span>Copy <b>token</b> dạng <b>123456:ABC…</b></span></li>
+    </ul>
+    <div class="warn">⚠️ Giữ token bí mật — ai có token là điều khiển được trợ lý.</div>
+  </div>
+</section>
+
+<!-- 17 · GATEWAY -->
+<section class="slide">
+  <div class="stage paper">
+    <span class="tag">Cài đặt · Gateway</span>
+    <div class="step-eye"><span class="num">Bật cổng</span> Gateway Telegram</div>
+    <h2 class="cmd-title">Khai báo Gateway Telegram</h2>
+    <div class="term"><div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>root@vps: ~</span></div><pre>hermes gateway     <span class="cm"># dán token Telegram khi được hỏi</span></pre></div>
+    <div class="note">Nhắn thử cho bot từ điện thoại → <b>Hermes trả lời</b>.</div>
+  </div>
+</section>
+
+<!-- 18 · BƯỚC 4 SOUL.md -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Cài đặt · SOUL.md</span>
+    <div class="step-eye"><span class="num">Bước 4</span> Dạy Hermes là ai</div>
+    <h2 class="cmd-title">SOUL.md — mô tả danh tính cho Hermes</h2>
+    <ul class="points">
+      <li class="point"><span class="n">1</span><span>1 file, 4 phần: <b>Danh tính · Giao tiếp · Kiến thức · Quy tắc</b></span></li>
+      <li class="point"><span class="n">2</span><span>Bạn có thể <b>nhờ Hermes hướng dẫn viết file</b></span></li>
+    </ul>
+    <div class="note">Đây chính là <b>tầng 1</b> của trí nhớ (slide Trí nhớ) — nạp mỗi phiên.</div>
+  </div>
+</section>
+
+<!-- 19 · BƯỚC 5 WIKI -->
+<section class="slide">
+  <div class="stage paper">
+    <span class="tag">Cài đặt · Wiki</span>
+    <div class="step-eye"><span class="num">Bước 5</span> Cho Hermes kiến thức</div>
+    <h2 class="cmd-title">Xây Wiki tri thức cho cá nhân / công ty</h2>
+    <div class="tree">knowledge/
+├── _INDEX.md        <span class="cm"># trợ lý đọc ĐẦU TIÊN</span>
+├── 01-kinh-doanh/   <span class="cm"># khách hàng, sản phẩm, offer</span>
+└── 02-noi-dung/     <span class="cm"># giọng văn, ý tưởng</span></div>
+    <div class="warn">⚠️ MEMORY.md giữ ~200 dòng — phình to là loãng và quên.</div>
+  </div>
+</section>
+
+<!-- 20 · BƯỚC 6 CRON -->
+<section class="slide">
+  <div class="stage">
+    <span class="tag">Cài đặt · Cron</span>
+    <div class="step-eye"><span class="num">Bước 6</span> Giao việc định kỳ</div>
+    <h2 class="cmd-title">Làm quen với cron job — giao KPI bằng lời</h2>
+    <div class="term"><div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>hermes</span></div><pre>/schedule Mỗi sáng 7 giờ, tổng hợp
+doanh thu hôm qua và gửi về Telegram</pre></div>
+    <div class="note">Công thức 3 mảnh: <b>khi nào + làm gì + gửi đâu</b>.</div>
+  </div>
+</section>
+
+<!-- 21 · ROADMAP / KẾT (purple) -->
+<section class="slide">
+  <div class="stage purple">
+    <span class="tag">Kết</span>
+    <div class="eyebrow" style="color:#3a2d63">Tóm tắt</div>
+    <h2 style="font-size:clamp(1.6rem,1rem+2.4vw,2.9rem)"><span class="stick a">6 bước để có</span> <span class="stick b">một trợ lý AI của riêng bạn</span></h2>
+    <div class="road">
+      <div class="step"><span class="s">01</span><b>Cài Hermes</b></div>
+      <div class="step"><span class="s">02</span><b>Chọn model (DeepSeek)</b></div>
+      <div class="step"><span class="s">03</span><b>Nối Telegram</b></div>
+      <div class="step"><span class="s">04</span><b>SOUL.md</b></div>
+      <div class="step"><span class="s">05</span><b>Wiki tri thức</b></div>
+      <div class="step"><span class="s">06</span><b>Giao cron</b></div>
+    </div>
+    <a class="src" href="https://hermes-agent.nousresearch.com" target="_blank">🔗 hermes-agent.nousresearch.com</a>
+  </div>
+</section>
+
+</div>
+
+<button class="nav prev" id="prev">‹</button>
+<button class="nav next" id="next">›</button>
+<div class="counter" id="counter">1 / 21</div>
+<script>
+  const s=[...document.querySelectorAll('.slide')];let i=0;
+  const c=document.getElementById('counter'),p=document.getElementById('prev'),n=document.getElementById('next');
+  function show(k){i=Math.max(0,Math.min(s.length-1,k));s.forEach((el,j)=>el.classList.toggle('active',j===i));c.textContent=(i+1)+' / '+s.length;}
+  p.onclick=()=>show(i-1);n.onclick=()=>show(i+1);
+  document.addEventListener('keydown',e=>{if(e.target.closest('a'))return;if(e.key==='ArrowRight'||e.key===' ')show(i+1);if(e.key==='ArrowLeft')show(i-1);});
+  show(0);
+</script>
+</body>
+</html>
